@@ -1,0 +1,14 @@
+ 20~ 21: T0, CPU
+ 21~ 22: T0, CPU
+ 22~ 23: T0, CPU
+ 23~ 24: T0, CPU
+ 24~ 25: T0, CPU
+ 25~ 26: T1, CPU
+ 26~ 27: T1, CPU
+ 27~ 28: T0, CPU
+ 28~ 29: T0, CPU
+   ~ 29: T1, Return from IO
+ 29~ 30: T1, CPU
+   ~ 31: T0, Return from IO
+ 31~ 32: T0, CPU
+ 32~ 33: T0, CPU
