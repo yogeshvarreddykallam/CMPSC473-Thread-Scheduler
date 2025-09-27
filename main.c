@@ -43,7 +43,7 @@ void log_msg(struct thread_struct *td, const char *format, ...) {
     int64_t ns = (ts.tv_sec * 1000000000UL) + ts.tv_nsec;
     current_slot->ns = ns;
 
-    va_list args;
+    va_list args; 
     va_start(args, format);
     vsnprintf(current_slot->buf, MAX_LOG_SIZE, format, args);
     va_end(args);

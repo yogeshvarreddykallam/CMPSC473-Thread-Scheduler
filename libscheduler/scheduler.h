@@ -14,7 +14,43 @@
 #include "api.h"
 
 // Declare your own data structures and functions here...
+typedef enum {
+    NEW,
+    READY,
+    RUNNING,
+    TERMINATED
+} thread_state_t;
 
+
+typedef struct thread_tcb thread_tcb_t;
+
+//LinkedList queue
+typedef struct node {
+    thread_tcb_t* tcb;
+    struct node* next;
+} node_t;
+
+// A simple queue for managing threads
+typedef struct {
+    node_t* head;
+    node_t* tail;
+} queue_t;
+
+// The Thread Control Block (TCB)
+struct thread_tcb {
+    int tid;
+    thread_state_t state;
+    pthread_cond_t cond;
+    float arrival_time;
+     // Each thread has its own condition variable
+};
+
+// --- Function Prototypes ---
+void queue_init(queue_t* q);
+void enqueue(queue_t* q, thread_tcb_t* tcb);
+thread_tcb_t* dequeue(queue_t* q);
+thread_tcb_t* queue_peek(queue_t* q);
+bool is_queue_empty(queue_t* q);
 struct mystruct {};
 struct mystruct2 {};
 
