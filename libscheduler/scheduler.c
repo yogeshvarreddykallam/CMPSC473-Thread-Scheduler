@@ -10,7 +10,9 @@ int global_time = 0;
 thread_tcb_t* tcb_array;            
 int active_threads;                 
 thread_tcb_t* cpu_thread = NULL;   
-queue_t* ready_queue;              
+queue_t* ready_queue;
+semaphore_t sem_array[MAX_NUM_SEM];
+              
 
 void queue_init(queue_t* q) {
     q->head = NULL;

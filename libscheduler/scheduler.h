@@ -18,7 +18,8 @@ typedef enum {
     NEW,
     READY,
     RUNNING,
-    TERMINATED
+    TERMINATED,
+    BLOCKED
 } thread_state_t;
 
 
@@ -42,8 +43,14 @@ struct thread_tcb {
     thread_state_t state;
     pthread_cond_t cond;
     float arrival_time;
-     // Each thread has its own condition variable
+    float io_finish_time;
 };
+
+// Semaphore structure for FCFS
+typedef struct {
+    int val;
+    queue_t wait_queue;
+} semaphore_t;
 
 // --- Function Prototypes ---
 void queue_init(queue_t* q);

@@ -8,6 +8,7 @@ extern pthread_cond_t state_changed_cond;
 extern thread_tcb_t* tcb_array;
 extern int active_threads;
 extern queue_t* ready_queue;
+extern semaphore_t sem_array[MAX_NUM_SEM];
 
 void init_scheduler(enum sch_type type, int thread_count) {
     pthread_mutex_init(&scheduler_lock, NULL);
@@ -24,6 +25,10 @@ void init_scheduler(enum sch_type type, int thread_count) {
 
     ready_queue = malloc(sizeof(queue_t));
     queue_init(ready_queue);
+    for (int i = 0; i < MAX_NUM_SEM; ++i) {
+        sem_array[i].val = 0; 
+        queue_init(&sem_array[i].wait_queue);
+    }
     return;
 }
 
