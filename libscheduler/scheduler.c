@@ -12,6 +12,8 @@ int active_threads;
 thread_tcb_t* cpu_thread = NULL;   
 queue_t* ready_queue;
 semaphore_t sem_array[MAX_NUM_SEM];
+int total_threads = 0;
+int io_busy_until = 0;
               
 
 void queue_init(queue_t* q) {
@@ -75,6 +77,23 @@ bool is_queue_empty(queue_t* q) {
         return true;
     }
     return q->head == NULL;
+}
+
+bool queue_remove(queue_t* q, int tid) {
+    if (q == NULL || q->head == NULL) return false;
+    node_t* prev = NULL;
+    node_t* cur = q->head;
+    while (cur!=NULL) {
+        if (cur->tcb && cur->tcb->tid == tid) {
+            if (prev) prev->next = cur->next; else q->head = cur->next;
+            if (cur == q->tail) q->tail = prev;
+            free(cur);
+            return true;
+        }
+        prev = cur;
+        cur = cur->next;
+    }
+    return false;
 }
 
 int myfunc() {
