@@ -14,7 +14,8 @@ queue_t* ready_queue;
 semaphore_t sem_array[MAX_NUM_SEM];
 int total_threads = 0;
 int io_busy_until = 0;
-              
+enum sch_type sch_no = SCH_FCFS;
+queue_t* io_queue = NULL;
 
 void queue_init(queue_t* q) {
     q->head = NULL;
@@ -23,6 +24,8 @@ void queue_init(queue_t* q) {
 
 
 void enqueue(queue_t* q, thread_tcb_t* tcb) {
+    queue_remove(q, tcb->tid);
+
     node_t* new_node = malloc(sizeof(node_t));
     new_node->tcb = tcb;
     new_node->next = NULL;
@@ -83,7 +86,7 @@ bool queue_remove(queue_t* q, int tid) {
     if (q == NULL || q->head == NULL) return false;
     node_t* prev = NULL;
     node_t* cur = q->head;
-    while (cur!=NULL) {
+    while (cur) {
         if (cur->tcb && cur->tcb->tid == tid) {
             if (prev) prev->next = cur->next; else q->head = cur->next;
             if (cur == q->tail) q->tail = prev;
@@ -107,4 +110,5 @@ int myfunc2() {
 
     return 0;
 };
+
 
