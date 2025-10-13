@@ -9,22 +9,43 @@ extern thread_tcb_t* tcb_array;
 extern int active_threads;
 extern queue_t* ready_queue;
 extern semaphore_t sem_array[MAX_NUM_SEM];
+extern int total_threads;
+extern enum sch_type sch_no;
+extern queue_t* io_queue;
+extern int io_busy_until;
+extern queue_t mlfq_queues[5];
 
 void init_scheduler(enum sch_type type, int thread_count) {
     pthread_mutex_init(&scheduler_lock, NULL);
     pthread_cond_init(&state_changed_cond, NULL);
 
+    sch_no = type;
+    io_busy_until = 0;
+
     active_threads = thread_count;
+    total_threads = thread_count;
 
     tcb_array = malloc(sizeof(thread_tcb_t) * thread_count);
     for (int i = 0; i < thread_count; ++i) {
         tcb_array[i].tid = i;
         tcb_array[i].state = NEW;
         pthread_cond_init(&tcb_array[i].cond, NULL);
+        tcb_array[i].arrival_time = INFINITY;   
+        tcb_array[i].io_finish_time = INFINITY;
+        tcb_array[i].rem_srtf_time = INT_MAX;
+        tcb_array[i].mlfq_level = 0;
+        tcb_array[i].mlfq_leftquant = 0;
+        tcb_array[i].mlfq_new_burst = false;
     }
-
     ready_queue = malloc(sizeof(queue_t));
     queue_init(ready_queue);
+    if (io_queue == NULL){
+        io_queue = malloc(sizeof(queue_t));
+    }
+    queue_init(io_queue);
+    for (int i = 0; i < 5; ++i){
+        queue_init(&mlfq_queues[i]);
+    }
     for (int i = 0; i < MAX_NUM_SEM; ++i) {
         sem_array[i].val = 0; 
         queue_init(&sem_array[i].wait_queue);
@@ -35,6 +56,10 @@ void init_scheduler(enum sch_type type, int thread_count) {
 void finish_scheduler() {
     free(tcb_array);
     free(ready_queue);
+    if (io_queue != NULL) { 
+        free(io_queue); 
+        io_queue = NULL; 
+    }
     pthread_mutex_destroy(&scheduler_lock);
     pthread_cond_destroy(&state_changed_cond);
     return;
