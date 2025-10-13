@@ -103,7 +103,8 @@ bool queue_remove(queue_t* q, int tid) {
 }
 
 void mlfq_enqueue(thread_tcb_t* t, int level) {
-    if (level < 0) level = 0; if (level > 4) level = 4;
+    if (level < 0) level = 0; 
+    if (level > 4) level = 4;
     t->mlfq_level = level;
     enqueue(&mlfq_queues[level], t);
 }
