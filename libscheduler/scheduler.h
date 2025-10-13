@@ -22,7 +22,6 @@ typedef enum {
     BLOCKED
 } thread_state_t;
 
-
 typedef struct thread_tcb thread_tcb_t;
 
 //LinkedList queue
@@ -42,9 +41,11 @@ struct thread_tcb {
     float arrival_time;
     float io_finish_time;
     int rem_srtf_time;
+    int mlfq_level;           
+    int mlfq_leftquant;    
+    bool mlfq_new_burst;
 };
 
-// Semaphore structure for FCFS
 typedef struct {
     int val;
     queue_t wait_queue;
@@ -56,8 +57,17 @@ thread_tcb_t* dequeue(queue_t* q);
 thread_tcb_t* queue_peek(queue_t* q);
 bool is_queue_empty(queue_t* q);
 bool queue_remove(queue_t* q, int tid);
+void mlfq_enqueue(thread_tcb_t* t, int level);
+thread_tcb_t* mlfq_dequeue(void);
+thread_tcb_t* mlfq_peek(void);
+bool checkMlfqIsEmpty(void);
+void removeMlfqTid(int tid);
+int checkMlfqLevel(void);
+
 
 extern int total_threads;
 extern int io_busy_until;
 extern queue_t* io_queue;
 extern enum sch_type sch_no;
+extern queue_t mlfq_queues[5];
+

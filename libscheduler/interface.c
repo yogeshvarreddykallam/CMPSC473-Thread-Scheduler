@@ -17,8 +17,29 @@ extern int total_threads;
 extern int io_busy_until;
 extern enum sch_type sch_no;
 extern queue_t* io_queue;
+extern queue_t mlfq_queues[5];
 
-// To move any IO finished BLOCKED threads to ready state
+// To check if there are any runnable threads or not.
+static inline bool checkNoRunnable(void) {
+    if (sch_no == SCH_MLFQ) {
+        return checkMlfqIsEmpty();
+    }
+    if(is_queue_empty(ready_queue)) return true;
+    return false;
+}
+
+// To check if any threads are still NEW whose arrival time are unknown.
+static inline bool checkUnknownNew(void) {
+    for (int i = 0; i < total_threads; ++i) {
+        thread_tcb_t* t = &tcb_array[i];
+        if (t->state == NEW && !isfinite(t->arrival_time)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+//To push any IO completions and NEW arrivals that are still pending to READY state.
 static void funcBlocked2Ready(void) {
     for (int i = 0; i < total_threads; ++i) {
         thread_tcb_t* t = &tcb_array[i];
@@ -26,30 +47,41 @@ static void funcBlocked2Ready(void) {
             t->state = READY;                  
             t->arrival_time = global_time;     
             t->rem_srtf_time = INT_MAX;       
-            enqueue(ready_queue, t);
-            pthread_cond_signal(&t->cond);     
+            if (sch_no == SCH_MLFQ) {
+                t->mlfq_level = 0;
+                t->mlfq_leftquant = MLFQ[0];
+                mlfq_enqueue(t, 0);
+                if (cpu_thread == NULL) {
+                    thread_tcb_t* tb = mlfq_peek();
+                    if (tb) pthread_cond_signal(&tb->cond);
+                }
+            } else {
+                enqueue(ready_queue, t);
+                pthread_cond_signal(&t->cond);     
+            }
         }
     }
     pthread_cond_signal(&state_changed_cond);
 }
 
-//To remove terminated threads(that are not ready) at the head of ready queue.
-static void funcRemoveNonReady(void) {
-    while (!is_queue_empty(ready_queue)) {
-        thread_tcb_t* h = queue_peek(ready_queue);
-        if (h && h->state == READY) break;
-        dequeue(ready_queue);
-    }
-}
-
-//To move new threads whose arrival time is already began to ready queue.
+//To move NEW threads whose arrival time reached to READY state.
 static void funcMoveAlreadyNew2Ready(void) {
     bool flag = false;
     for (int i = 0; i < total_threads; ++i) {
         thread_tcb_t* t = &tcb_array[i];
         if (t->state == NEW && isfinite(t->arrival_time) && (int)t->arrival_time <= global_time) {
             t->state = READY;
-            enqueue(ready_queue, t);
+            if (sch_no == SCH_MLFQ) {
+                t->mlfq_level = 0;   //Level0 initially
+                t->mlfq_leftquant = MLFQ[0];
+                mlfq_enqueue(t, 0);
+                if (cpu_thread == NULL) {
+                    thread_tcb_t* p = mlfq_peek();
+                    if (p!=NULL) pthread_cond_signal(&p->cond);
+                }
+            } else {
+                enqueue(ready_queue, t);
+            }
             pthread_cond_signal(&t->cond);
             flag = true;
         }
@@ -95,44 +127,42 @@ static thread_tcb_t* FindBetterReadySrtf(int my_remaining, int my_tid) {
     return ans;
 }
 
-// To check for any lower tid thread(with some unknown remaining time) already existing as READY than the given thread for SRTF.
-static bool CheckLowerTidSrtf(int tid) {
-    if(ready_queue == NULL) return false;
-    node_t* curr = ready_queue->head;
-    while (curr) {
-        thread_tcb_t* t = curr->tcb;
-        if (t && t->state == READY && t->rem_srtf_time == INT_MAX && (int)t->arrival_time <= global_time && t->tid < tid) {
-            return true;
-        }
-        curr = curr->next;
-    }
-    return false;
-}
-
 static bool SetReadySrtf(thread_tcb_t* t) {
     if (!t) return false;
     thread_tcb_t* b = funcBestSrtf();
     if (!b) return false;
-    if (CheckLowerTidSrtf(b->tid)) return false;  // If a lower tid is already existing as READY, defer it.
     return b && b->tid == t->tid;
 }
 
 static void funcWakeBestReady(void) {
     if (sch_no == SCH_SRTF) {
         thread_tcb_t* n = funcBestSrtf();
-        if (n && !CheckLowerTidSrtf(n->tid)) {
+        if (n) {
             pthread_cond_signal(&n->cond);
         } else {
             pthread_cond_signal(&state_changed_cond);
         }
         return;
     }
-    funcRemoveNonReady();   //FCFS
+    if (sch_no == SCH_MLFQ) {
+        thread_tcb_t* n = mlfq_peek();
+        if (n) {
+            pthread_cond_signal(&n->cond);
+        } else {
+            pthread_cond_signal(&state_changed_cond);
+        }
+        return;
+    }
+    // FCFS
+    while (!is_queue_empty(ready_queue)) {
+        thread_tcb_t* h = queue_peek(ready_queue);
+        if (h && h->state == READY) break;
+        dequeue(ready_queue);
+    }
     thread_tcb_t* n = queue_peek(ready_queue);
     if (n) pthread_cond_signal(&n->cond);
 }
 
-// To check for any READY thread with known remaining time already existing.
 static bool funcReadyKnownRemTime(void) {
     if(ready_queue == NULL) return false;
     node_t* curr = ready_queue->head;
@@ -146,7 +176,6 @@ static bool funcReadyKnownRemTime(void) {
     return false;
 }
 
-// To check if IO_QUEUE already has a lower tid request at the same request time
 static bool CheckIOQueuelowTid(int my_tid, int request_time) {
     if (!io_queue) return false;
     node_t* curr = io_queue->head;
@@ -158,7 +187,6 @@ static bool CheckIOQueuelowTid(int my_tid, int request_time) {
     return false;
 }
 
-// To check if this given thread id already present in IO Queue.
 static bool CheckIOQueueTid(int tid) {
     if (!io_queue) return false;
     node_t* curr = io_queue->head;
@@ -169,7 +197,6 @@ static bool CheckIOQueueTid(int tid) {
     return false;
 }
 
-//To check if there is any lower tid thread already existing with arrival<=t and hasn't enqueued IO
 static bool CheckLowTidIOStatus(int my_tid, int t) {
     for (int i = 0; i < my_tid; ++i) {
         thread_tcb_t* x = &tcb_array[i];
@@ -187,25 +214,21 @@ int cpu_me(float current_time, int tid, int remaining_time) {
     pthread_mutex_lock(&scheduler_lock);
     thread_tcb_t* my_tcb = &tcb_array[tid];
 
-
-    // To check remaining time for SRTF
     int flagUnknown = (my_tcb->rem_srtf_time == INT_MAX);
-    my_tcb->rem_srtf_time = remaining_time;
+    my_tcb->rem_srtf_time = (sch_no == SCH_SRTF ? remaining_time : INT_MAX);
 
-    if (flagUnknown && remaining_time != INT_MAX) {
-        pthread_cond_signal(&state_changed_cond); // signaling for transitions from unknown to known.
+    if (flagUnknown && sch_no == SCH_SRTF && remaining_time != INT_MAX) {
+        pthread_cond_signal(&state_changed_cond);
     }
-
-    funcBlocked2Ready();  // to push any IO completions already existing into READY state.
-    funcMoveAlreadyNew2Ready();  // to push any NEW arrived threads before or at this time.
+    funcBlocked2Ready();
+    funcMoveAlreadyNew2Ready();
 
     if (my_tcb->state == NEW) {
         current_time = ceilf(current_time);
         current_time = (int)current_time;
         my_tcb->arrival_time = current_time;
         pthread_cond_signal(&state_changed_cond);
-
-        if (global_time < my_tcb->arrival_time && cpu_thread == NULL && is_queue_empty(ready_queue)) { //If no thread is running and no thread is ready.
+        if (global_time < my_tcb->arrival_time && cpu_thread == NULL && checkNoRunnable()==true && checkUnknownNew()==false) {
             float next_time = my_tcb->arrival_time;
             for (int i = 0; i < total_threads; ++i) {
                 if (tcb_array[i].state == NEW && isfinite(tcb_array[i].arrival_time) && tcb_array[i].arrival_time > global_time && tcb_array[i].arrival_time < next_time) {
@@ -233,34 +256,139 @@ int cpu_me(float current_time, int tid, int remaining_time) {
         while (global_time < my_tcb->arrival_time) {
             pthread_cond_wait(&my_tcb->cond, &scheduler_lock);
         }
-        my_tcb->state = READY;
-        enqueue(ready_queue, my_tcb);
-
-        if (cpu_thread == NULL && !is_queue_empty(ready_queue)) {
-            bool next = queue_peek(ready_queue)->tid == tid;
-            if(sch_no == SCH_SRTF) {
-                next = SetReadySrtf(my_tcb);
+        if (my_tcb->state == NEW) { // To avoid double enqueue
+            my_tcb->state = READY;
+            if (sch_no == SCH_MLFQ) {
+                my_tcb->mlfq_level = 0;
+                my_tcb->mlfq_leftquant = MLFQ[0];
+                mlfq_enqueue(my_tcb, 0);
+            } else {
+                enqueue(ready_queue, my_tcb);
             }
-            if (next) {
-                if (sch_no == SCH_SRTF) {
-                    queue_remove(ready_queue, tid);
-                } else {
-                    dequeue(ready_queue);
+        }
+
+        // For FCFS or SRTF, we pick from ready queue immediately.
+        if (sch_no != SCH_MLFQ) {
+            if (cpu_thread == NULL && !is_queue_empty(ready_queue)) {
+                bool next = queue_peek(ready_queue)->tid == tid;
+                if(sch_no == SCH_SRTF) {
+                    next = SetReadySrtf(my_tcb);
                 }
-                cpu_thread = my_tcb;
-                my_tcb->state = RUNNING;
+                if (next == true) {
+                    if (sch_no == SCH_SRTF) {
+                        queue_remove(ready_queue, tid);
+                    } else {
+                        dequeue(ready_queue);
+                    }
+                    cpu_thread = my_tcb;
+                    my_tcb->state = RUNNING;
+                }
             }
         }
     }
 
+    if (sch_no == SCH_MLFQ) {
+        while (1) {
+            if (cpu_thread == my_tcb) break;
+            if (cpu_thread == NULL) {
+                thread_tcb_t* p = mlfq_peek();
+                if (p && p->tid == tid) break;
+            }
+            pthread_cond_wait(&my_tcb->cond, &scheduler_lock);
+        }
+
+        if (cpu_thread == NULL) {
+            thread_tcb_t* tr = mlfq_dequeue();
+            cpu_thread = tr;
+            tr->state = RUNNING;
+            if (tr->mlfq_leftquant <= 0) tr->mlfq_leftquant = MLFQ[tr->mlfq_level];
+        }
+        global_time++;
+        if (cpu_thread == my_tcb) {
+            if (my_tcb->mlfq_leftquant <= 0) {
+                my_tcb->mlfq_leftquant = MLFQ[my_tcb->mlfq_level];
+            }
+            my_tcb->mlfq_leftquant -= 1;
+        }
+        funcBlocked2Ready();
+        funcMoveAlreadyNew2Ready();
+        if (cpu_thread == NULL) {
+            thread_tcb_t* p = mlfq_peek();
+            if (p!=NULL) pthread_cond_signal(&p->cond);
+        }
+
+        if (cpu_thread == my_tcb) {
+            int my_level = my_tcb->mlfq_level;
+            int level= checkMlfqLevel();
+            if (level >= 0 && level < my_level) {
+                cpu_thread = NULL;
+                my_tcb->state = READY;
+                my_tcb->arrival_time = global_time; // FCFS within each level
+                mlfq_enqueue(my_tcb, my_level);
+                thread_tcb_t* p = mlfq_peek();
+                if (p) pthread_cond_signal(&p->cond);
+                for (int i = 0; i < total_threads; ++i) {
+                    if (tcb_array[i].state == NEW && isfinite(tcb_array[i].arrival_time)
+                        && (int)tcb_array[i].arrival_time <= global_time) {
+                        pthread_cond_signal(&tcb_array[i].cond);
+                    }
+                }
+                for (int i = 0; i < total_threads; ++i) {
+                    if (tcb_array[i].state == BLOCKED && isfinite(tcb_array[i].io_finish_time)
+                        && (int)tcb_array[i].io_finish_time <= global_time) {
+                        pthread_cond_signal(&tcb_array[i].cond);
+                    }
+                }
+                int ret = global_time;
+                pthread_mutex_unlock(&scheduler_lock);
+                if (sch_no == SCH_MLFQ) sched_yield();
+                return ret;
+            }
+        }
+        if (cpu_thread == my_tcb) {
+            if (remaining_time - 1 > 0 && my_tcb->mlfq_leftquant == 0) {
+                cpu_thread = NULL;
+                my_tcb->state = READY;
+                int new = 0;
+                if(my_tcb->mlfq_level < 4) new = my_tcb->mlfq_level + 1;
+                else new = 4;
+                my_tcb->mlfq_level = new;
+                my_tcb->mlfq_leftquant = MLFQ[new];
+                my_tcb->arrival_time = global_time;
+                mlfq_enqueue(my_tcb, new);
+                thread_tcb_t* p = mlfq_peek();
+                if (p) pthread_cond_signal(&p->cond);
+            } else {
+                cpu_thread = my_tcb;
+                my_tcb->state = RUNNING;
+            }
+        }
+
+        int ret = global_time;
+        for (int i = 0; i < total_threads; ++i) {
+            if (tcb_array[i].state == NEW && isfinite(tcb_array[i].arrival_time)
+                && (int)tcb_array[i].arrival_time <= global_time) {
+                pthread_cond_signal(&tcb_array[i].cond);
+            }
+        }
+        for (int i = 0; i < total_threads; ++i) {
+            if (tcb_array[i].state == BLOCKED && isfinite(tcb_array[i].io_finish_time)
+                && (int)tcb_array[i].io_finish_time <= global_time) {
+                pthread_cond_signal(&tcb_array[i].cond);
+            }
+        }
+        pthread_mutex_unlock(&scheduler_lock);
+        sched_yield(); 
+        return ret;
+    }
+    // FCFS or SRTF
     if (sch_no == SCH_SRTF) {
         while (1) {
             if (cpu_thread == my_tcb) {
-                thread_tcb_t* better_now = FindBetterReadySrtf(my_tcb->rem_srtf_time, tid);
-                if (!better_now) {
+                thread_tcb_t* tb = FindBetterReadySrtf(my_tcb->rem_srtf_time, tid);
+                if (!tb) {
                     break;
                 }
-                // Do preempt to move self -> READY with arrival now and wake the best thread.
                 cpu_thread = NULL;
                 my_tcb->state = READY;
                 my_tcb->arrival_time = global_time;
@@ -274,10 +402,7 @@ int cpu_me(float current_time, int tid, int remaining_time) {
                 }
             } 
             else {
-                // Means someone else is running  -> keep waiting
             }
-
-            // To wait for either a time/state change or targeted wakeup
             if (!funcReadyKnownRemTime()) {
                 pthread_cond_wait(&state_changed_cond, &scheduler_lock);
             } else {
@@ -293,14 +418,13 @@ int cpu_me(float current_time, int tid, int remaining_time) {
 
     if (cpu_thread == NULL) {
         if (sch_no == SCH_SRTF) {
-            // To pick the best known SRTF thread if exists(we will ignore unknowns unless we find a lower-tid unknown already existing.)
-            thread_tcb_t* best = funcBestSrtf();
-            if (best && !CheckLowerTidSrtf(best->tid)) {
-                cpu_thread = best;
-                queue_remove(ready_queue, best->tid);
+            thread_tcb_t* tb = funcBestSrtf();
+            if (tb) {
+                cpu_thread = tb;
+                queue_remove(ready_queue, tb->tid);
             } else {
                 pthread_mutex_unlock(&scheduler_lock);
-                sched_yield(); //to let the scheduler know that other threads run.
+                sched_yield();
                 pthread_mutex_lock(&scheduler_lock);
             }
         } else {
@@ -308,25 +432,19 @@ int cpu_me(float current_time, int tid, int remaining_time) {
         }
 
         my_tcb = &tcb_array[tid];
-
         if (cpu_thread == my_tcb) {
             my_tcb->state = RUNNING;
         }
     }
 
-    // Move to next tick
-
-    // Move to next tick
     global_time++;
 
-    // To update remaining time for SRTF
     if (sch_no == SCH_SRTF) {
         if (tcb_array[tid].rem_srtf_time > 0 && tcb_array[tid].state == RUNNING) {
             tcb_array[tid].rem_srtf_time = remaining_time - 1;
         }
     }
 
-    // To push any IO completions that became due at this new tick.
     funcBlocked2Ready();
     funcMoveAlreadyNew2Ready();
 
@@ -341,33 +459,29 @@ int cpu_me(float current_time, int tid, int remaining_time) {
         }
     }
 
-    // For SRTF - we preempt only if a strictly better READY thread exists (for next tick)
-    // and compare against my remaining updated time.
     if (sch_no == SCH_SRTF) {
-        thread_tcb_t* me = &tcb_array[tid];
+        thread_tcb_t* tr = &tcb_array[tid];
         int remainticks = remaining_time - 1;
         if (remainticks < 0) remainticks = 0;
-        thread_tcb_t* better = FindBetterReadySrtf(remainticks, tid);
-        if (better && me->rem_srtf_time > 0) {
+        thread_tcb_t* tb = FindBetterReadySrtf(remainticks, tid);
+        if (tb && tr->rem_srtf_time > 0) {
             if (cpu_thread && cpu_thread->tid == tid) {
                 cpu_thread = NULL;
             }
-            me->state = READY;
-            me->arrival_time = global_time;
-            enqueue(ready_queue, me);
+            tr->state = READY;
+            tr->arrival_time = global_time;
+            enqueue(ready_queue, tr);
             funcWakeBestReady();
             pthread_cond_signal(&state_changed_cond);
         } 
         else {
-            cpu_thread = me;
-            me->state = RUNNING;
+            cpu_thread = tr;
+            tr->state = RUNNING;
         }
     }
 
     int time_of_return = global_time;
-
     pthread_mutex_unlock(&scheduler_lock);
-
     if (sch_no == SCH_SRTF) sched_yield();
     return time_of_return;
 }
@@ -384,6 +498,7 @@ int io_me(float current_time, int tid, int duration) {
         pthread_cond_signal(&state_changed_cond);
     }
 
+    if (sch_no == SCH_MLFQ) removeMlfqTid(tid);
     queue_remove(ready_queue, tid);
     my_tcb->state = BLOCKED;
     my_tcb->rem_srtf_time = INT_MAX;
@@ -395,11 +510,9 @@ int io_me(float current_time, int tid, int duration) {
 
     if (cpu_thread && cpu_thread->tid == tid) {
         cpu_thread = NULL;
-        if (!is_queue_empty(ready_queue)) funcWakeBestReady();
+        if (!checkNoRunnable()) funcWakeBestReady();
     }
 
-    // Only the head of the io_queue may start IO.
-    // If not head, wait to be signaled.
     while(1){
         while (io_queue->head == NULL || queue_peek(io_queue)->tid != tid) {
             pthread_cond_wait(&state_changed_cond, &scheduler_lock);
@@ -408,8 +521,8 @@ int io_me(float current_time, int tid, int duration) {
         while (global_time < request_time) {
             pthread_cond_wait(&state_changed_cond, &scheduler_lock);
         }
-        if (io_busy_until <= request_time) { // If IO device is idle
-            if (CheckLowTidIOStatus(tid, request_time)) { // chance is given to lower tid threads
+        if (io_busy_until <= request_time) {
+            if (CheckLowTidIOStatus(tid, request_time)) {
                 pthread_cond_wait(&state_changed_cond, &scheduler_lock);
                 continue;
             }
@@ -437,32 +550,38 @@ int io_me(float current_time, int tid, int duration) {
     if (!is_queue_empty(io_queue)) {
         pthread_cond_signal(&state_changed_cond);
     }
+
     if (cpu_thread == NULL) {
-        funcRemoveNonReady();
-        if (is_queue_empty(ready_queue)) {
+        if (checkNoRunnable()==true) {
             float next_time = INFINITY;
             for (int i = 0; i < total_threads; ++i) {
-                if (tcb_array[i].state == NEW && isfinite(tcb_array[i].arrival_time) && tcb_array[i].arrival_time > global_time && tcb_array[i].arrival_time < next_time) {
+                if (tcb_array[i].state == NEW && isfinite(tcb_array[i].arrival_time)
+                    && tcb_array[i].arrival_time > global_time && tcb_array[i].arrival_time < next_time) {
                     next_time = tcb_array[i].arrival_time;
                 }
-                if (tcb_array[i].state == BLOCKED && isfinite(tcb_array[i].io_finish_time) && tcb_array[i].io_finish_time > global_time && tcb_array[i].io_finish_time < next_time) {
+                if (tcb_array[i].state == BLOCKED && isfinite(tcb_array[i].io_finish_time)
+                    && tcb_array[i].io_finish_time > global_time && tcb_array[i].io_finish_time < next_time) {
                     next_time = tcb_array[i].io_finish_time;
                 }
             }
-            if (isfinite(next_time)) {
+            if (isfinite(next_time) && !checkUnknownNew()==true) {
                 global_time = (int)next_time;
                 funcBlocked2Ready();
                 funcMoveAlreadyNew2Ready();
                 for (int i = 0; i < total_threads; ++i) {
-                    if (tcb_array[i].state == NEW && isfinite(tcb_array[i].arrival_time) && (int)tcb_array[i].arrival_time <= global_time) {
+                    if (tcb_array[i].state == NEW && isfinite(tcb_array[i].arrival_time)
+                        && (int)tcb_array[i].arrival_time <= global_time) {
                         pthread_cond_signal(&tcb_array[i].cond);
                     }
-                    if (tcb_array[i].state == BLOCKED && isfinite(tcb_array[i].io_finish_time) && (int)tcb_array[i].io_finish_time <= global_time) {
+                    if (tcb_array[i].state == BLOCKED && isfinite(tcb_array[i].io_finish_time)
+                        && (int)tcb_array[i].io_finish_time <= global_time) {
                         pthread_cond_signal(&tcb_array[i].cond);
                     }
                 }
                 pthread_cond_signal(&state_changed_cond);
             }
+        } else {
+            funcWakeBestReady();
         }
     }
 
@@ -470,7 +589,7 @@ int io_me(float current_time, int tid, int duration) {
         pthread_cond_wait(&my_tcb->cond, &scheduler_lock);
     }
 
-    if (my_tcb->state != BLOCKED) { // After IO completion push to READY as before
+    if (my_tcb->state != BLOCKED) {
         my_tcb->io_finish_time = INFINITY;
         int time_of_return = finish_time;
         pthread_mutex_unlock(&scheduler_lock);
@@ -480,13 +599,24 @@ int io_me(float current_time, int tid, int duration) {
     my_tcb->io_finish_time = INFINITY;
     my_tcb->state = READY;
     my_tcb->arrival_time = global_time;
-    enqueue(ready_queue, my_tcb);
+    if (sch_no == SCH_MLFQ) {
+        my_tcb->mlfq_level = 0;
+        my_tcb->mlfq_leftquant = MLFQ[0];
+        mlfq_enqueue(my_tcb, 0);
+    } else {
+        enqueue(ready_queue, my_tcb);
+    }
 
-    if (cpu_thread == NULL && !is_queue_empty(ready_queue)) {
-        if (sch_no == SCH_SRTF) {
-            if (SetReadySrtf(my_tcb)) pthread_cond_signal(&my_tcb->cond);
-        } else if (queue_peek(ready_queue)->tid == tid) {
-            pthread_cond_signal(&my_tcb->cond);
+    if (cpu_thread == NULL) {
+        if (sch_no == SCH_MLFQ) {
+            thread_tcb_t* p = mlfq_peek();
+            if (p) pthread_cond_signal(&p->cond);
+        } else if (!is_queue_empty(ready_queue)) {
+            if (sch_no == SCH_SRTF) {
+                if (SetReadySrtf(my_tcb)) pthread_cond_signal(&my_tcb->cond);
+            } else if (queue_peek(ready_queue)->tid == tid) {
+                pthread_cond_signal(&my_tcb->cond);
+            }
         }
     }
 
@@ -504,7 +634,7 @@ int P(float current_time, int tid, int sem_id) {
     if (my_tcb->state == NEW) {
         int at = (int)ceilf(current_time);
         my_tcb->arrival_time = at;
-        if (global_time < at && cpu_thread == NULL && is_queue_empty(ready_queue)) {
+        if (global_time < at && cpu_thread == NULL && checkNoRunnable()==true && checkUnknownNew()!=true) {
             float next_time = at;
             for (int i = 0; i < total_threads; ++i) {
                 if (tcb_array[i].state == NEW && isfinite(tcb_array[i].arrival_time) && tcb_array[i].arrival_time > global_time && tcb_array[i].arrival_time < next_time) {
@@ -514,7 +644,7 @@ int P(float current_time, int tid, int sem_id) {
                     next_time = tcb_array[i].io_finish_time;
                 }
             }
-            if (isfinite(next_time)) {
+            if (isfinite(next_time) && checkUnknownNew()!=true) {
                 global_time = (int)next_time;
                 funcBlocked2Ready();
                 funcMoveAlreadyNew2Ready();
@@ -535,22 +665,22 @@ int P(float current_time, int tid, int sem_id) {
         my_tcb->state = READY;
         enqueue(ready_queue, my_tcb);
     }
-
     sem->val--;
     if (sem->val < 0) {
         my_tcb->io_finish_time = INFINITY;
         my_tcb->rem_srtf_time = INT_MAX;
+        if (sch_no == SCH_MLFQ) removeMlfqTid(tid);
         queue_remove(ready_queue, tid);
         my_tcb->state = BLOCKED;
         enqueue(&sem->wait_queue, my_tcb);
         if (cpu_thread && cpu_thread->tid == tid) {
             cpu_thread = NULL;
-            if (!is_queue_empty(ready_queue)) {
+            if (!checkNoRunnable()) {
                 funcWakeBestReady();
             }
         }
 
-        if (cpu_thread == NULL && is_queue_empty(ready_queue)) {
+        if (cpu_thread == NULL && checkNoRunnable()==true) {
             float next_time = INFINITY;
             for (int i = 0; i < total_threads; ++i) {
                 if (tcb_array[i].state == NEW && isfinite(tcb_array[i].arrival_time) && tcb_array[i].arrival_time > global_time && tcb_array[i].arrival_time < next_time) {
@@ -560,7 +690,7 @@ int P(float current_time, int tid, int sem_id) {
                     next_time = tcb_array[i].io_finish_time;
                 }
             }
-            if (isfinite(next_time)) {
+            if (isfinite(next_time) && checkUnknownNew()!=true) {
                 global_time = (int)next_time;
                 funcBlocked2Ready();
                 funcMoveAlreadyNew2Ready();
@@ -577,12 +707,12 @@ int P(float current_time, int tid, int sem_id) {
 
         while (my_tcb->state == BLOCKED) {
             pthread_cond_wait(&my_tcb->cond, &scheduler_lock);
-            pthread_cond_wait(&my_tcb->cond, &scheduler_lock);
         }
         int time_of_return = global_time;
         pthread_mutex_unlock(&scheduler_lock);
         return time_of_return;
     }
+
     int time_of_return = global_time;
     pthread_mutex_unlock(&scheduler_lock);
     return time_of_return;
@@ -598,8 +728,8 @@ int V(float current_time, int tid, int sem_id) {
     if (my_tcb->state == NEW && !isfinite(my_tcb->arrival_time)) {
         my_tcb->arrival_time = at;
     }
-    if (global_time < at) {  // We should start V till it reaches 'at'
-        if (cpu_thread == NULL && is_queue_empty(ready_queue)) {
+    if (global_time < at) {
+        if (cpu_thread == NULL && checkNoRunnable()==true && checkUnknownNew()!=true) {
             float next_time = at;
             for (int i = 0; i < total_threads; ++i) {
                 if (tcb_array[i].state == NEW && isfinite(tcb_array[i].arrival_time) && tcb_array[i].arrival_time > global_time && tcb_array[i].arrival_time < next_time) {
@@ -634,19 +764,32 @@ int V(float current_time, int tid, int sem_id) {
         thread_tcb_t *tmp = dequeue(&sem->wait_queue);
         tmp->state = READY;
         tmp->arrival_time = global_time;
-        enqueue(ready_queue, tmp);
-        pthread_cond_signal(&tmp->cond); // wake the next unblocked thread
+        if (sch_no == SCH_MLFQ) {
+            tmp->mlfq_leftquant = MLFQ[tmp->mlfq_level];
+            mlfq_enqueue(tmp, tmp->mlfq_level);
+        } else {
+            enqueue(ready_queue, tmp);
+        }
+        pthread_cond_signal(&tmp->cond);
         pthread_cond_signal(&state_changed_cond);
+        if (cpu_thread == NULL) {
+            funcWakeBestReady();
+        }
     }
-    my_tcb->state = READY;
     my_tcb->state = READY;
     my_tcb->arrival_time = global_time;
     my_tcb->rem_srtf_time = INT_MAX;
-    enqueue(ready_queue, my_tcb);
+    if (sch_no == SCH_MLFQ) {
+        my_tcb->mlfq_level = 0;
+        my_tcb->mlfq_leftquant = MLFQ[0];
+        mlfq_enqueue(my_tcb, 0);
+    } else {
+        enqueue(ready_queue, my_tcb);
+    }
     if (cpu_thread && cpu_thread->tid == tid) {
         cpu_thread = NULL;
     }
-    if (!is_queue_empty(ready_queue)) {
+    if (checkNoRunnable()!=true) {
         funcWakeBestReady();
     }
     pthread_cond_signal(&state_changed_cond);
@@ -663,9 +806,14 @@ void end_me(int tid) {
     if (cpu_thread != NULL && cpu_thread->tid == tid) {
         cpu_thread = NULL;
     }
+    if (sch_no == SCH_MLFQ) removeMlfqTid(tid);
     queue_remove(ready_queue, tid);
-    funcRemoveNonReady();
-    if (!is_queue_empty(ready_queue)) {
+    while (!is_queue_empty(ready_queue)) {
+        thread_tcb_t* h = queue_peek(ready_queue);
+        if (h && h->state == READY) break;
+        dequeue(ready_queue);
+    }
+    if (checkNoRunnable()!=true) {
         funcWakeBestReady();
     } else {
         bool flag = false;

@@ -16,9 +16,8 @@ int P(float current_time, int tid, int sem_id);
 int V(float current_time, int tid, int sem_id);
 void end_me(int tid);
 
-// MLFQ definitions
-static const int MLFQ_TIME_QUANTUM[5] = {5, 10, 15, 20, 25};
-// MLFQ_TIME_QUANTUM[0] is the highest, [4] is the lowest level
+static const int MLFQ[5] = {5, 10, 15, 20, 25};
+
 
 // Semaphore definitions
 #define MAX_NUM_SEM 10 // sem_id from 0 to 9

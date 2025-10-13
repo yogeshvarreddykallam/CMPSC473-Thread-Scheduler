@@ -3,6 +3,9 @@
 // Scheduler implementation
 // Implement your own functions here...
 #include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#include <limits.h>
 
 pthread_mutex_t scheduler_lock;     
 pthread_cond_t state_changed_cond;  
@@ -14,18 +17,18 @@ queue_t* ready_queue;
 semaphore_t sem_array[MAX_NUM_SEM];
 int total_threads = 0;
 int io_busy_until = 0;
-enum sch_type sch_no = SCH_FCFS;
 queue_t* io_queue = NULL;
+enum sch_type sch_no = SCH_FCFS;
+queue_t mlfq_queues[5];
 
 void queue_init(queue_t* q) {
     q->head = NULL;
     q->tail = NULL;
 }
 
-
 void enqueue(queue_t* q, thread_tcb_t* tcb) {
+    // Ordering is done by arrival time then tid (for FCFS and SRTF)
     queue_remove(q, tcb->tid);
-
     node_t* new_node = malloc(sizeof(node_t));
     new_node->tcb = tcb;
     new_node->next = NULL;
@@ -99,16 +102,45 @@ bool queue_remove(queue_t* q, int tid) {
     return false;
 }
 
-int myfunc() {
-    // Function for ...
+void mlfq_enqueue(thread_tcb_t* t, int level) {
+    if (level < 0) level = 0; if (level > 4) level = 4;
+    t->mlfq_level = level;
+    enqueue(&mlfq_queues[level], t);
+}
 
-    return 0;
-};
+thread_tcb_t* mlfq_peek(void) {
+    for (int i = 0; i < 5; ++i) {
+        thread_tcb_t* t = queue_peek(&mlfq_queues[i]);
+        if (t) return t;
+    }
+    return NULL;
+}
 
-int myfunc2() {
-    // Function for ...
+thread_tcb_t* mlfq_dequeue(void) {
+    for (int i = 0; i < 5; ++i) {
+        if (!is_queue_empty(&mlfq_queues[i])) {
+            return dequeue(&mlfq_queues[i]);
+        }
+    }
+    return NULL;
+}
 
-    return 0;
-};
+bool checkMlfqIsEmpty(void) {
+    for (int i = 0; i < 5; ++i) if (!is_queue_empty(&mlfq_queues[i])) return false;
+    return true;
+}
+
+void removeMlfqTid(int tid) {
+    for (int i = 0; i < 5; ++i){
+        queue_remove(&mlfq_queues[i], tid);
+    }
+}
+
+int checkMlfqLevel(void) {
+    for (int i = 0; i < 5; ++i) {
+        if (!is_queue_empty(&mlfq_queues[i])) return i;
+    }
+    return -1;
+}
 
 

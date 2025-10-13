@@ -1,0 +1,755 @@
+[t=0 READY] size=0 : (empty)
+
+=== Scheduler State @t=0 [NEW admitted -> Q0] ===
+active=5, cpu=none
+[t=0 READY] size=0 : (empty)
+[t=0 IO] size=0 : (empty)
+[t=0 SEM0] size=0 : (empty)
+[t=0 SEM1] size=0 : (empty)
+[t=0 SEM2] size=0 : (empty)
+[t=0 SEM3] size=0 : (empty)
+[t=0 SEM4] size=0 : (empty)
+[t=0 SEM5] size=0 : (empty)
+[t=0 SEM6] size=0 : (empty)
+[t=0 SEM7] size=0 : (empty)
+[t=0 SEM8] size=0 : (empty)
+[t=0 SEM9] size=0 : (empty)
+[t=0 Q0] size=1 : T0(READY,at=0,io=-)
+[t=0 Q1] size=0 : (empty)
+[t=0 Q2] size=0 : (empty)
+[t=0 Q3] size=0 : (empty)
+[t=0 Q4] size=0 : (empty)
+=== End State ===
+
+[t=0 READY] size=0 : (empty)
+
+=== Scheduler State @t=0 [MLFQ pick] ===
+active=5, cpu=set
+  CPU: T0(RUNNING)
+[t=0 READY] size=0 : (empty)
+[t=0 IO] size=0 : (empty)
+[t=0 SEM0] size=0 : (empty)
+[t=0 SEM1] size=0 : (empty)
+[t=0 SEM2] size=0 : (empty)
+[t=0 SEM3] size=0 : (empty)
+[t=0 SEM4] size=0 : (empty)
+[t=0 SEM5] size=0 : (empty)
+[t=0 SEM6] size=0 : (empty)
+[t=0 SEM7] size=0 : (empty)
+[t=0 SEM8] size=0 : (empty)
+[t=0 SEM9] size=0 : (empty)
+[t=0 Q0] size=0 : (empty)
+[t=0 Q1] size=0 : (empty)
+[t=0 Q2] size=0 : (empty)
+[t=0 Q3] size=0 : (empty)
+[t=0 Q4] size=0 : (empty)
+=== End State ===
+
+
+=== Scheduler State @t=1 [after tick] ===
+active=5, cpu=set
+  CPU: T0(RUNNING)
+[t=1 READY] size=0 : (empty)
+[t=1 IO] size=0 : (empty)
+[t=1 SEM0] size=0 : (empty)
+[t=1 SEM1] size=0 : (empty)
+[t=1 SEM2] size=0 : (empty)
+[t=1 SEM3] size=0 : (empty)
+[t=1 SEM4] size=0 : (empty)
+[t=1 SEM5] size=0 : (empty)
+[t=1 SEM6] size=0 : (empty)
+[t=1 SEM7] size=0 : (empty)
+[t=1 SEM8] size=0 : (empty)
+[t=1 SEM9] size=0 : (empty)
+[t=1 Q0] size=0 : (empty)
+[t=1 Q1] size=0 : (empty)
+[t=1 Q2] size=0 : (empty)
+[t=1 Q3] size=0 : (empty)
+[t=1 Q4] size=0 : (empty)
+=== End State ===
+
+[t=1 READY] size=0 : (empty)
+[t=1 READY] size=0 : (empty)
+
+=== Scheduler State @t=2 [after tick] ===
+active=5, cpu=set
+  CPU: T0(RUNNING)
+[t=2 READY] size=0 : (empty)
+[t=2 IO] size=0 : (empty)
+[t=2 SEM0] size=0 : (empty)
+[t=2 SEM1] size=0 : (empty)
+[t=2 SEM2] size=0 : (empty)
+[t=2 SEM3] size=0 : (empty)
+[t=2 SEM4] size=0 : (empty)
+[t=2 SEM5] size=0 : (empty)
+[t=2 SEM6] size=0 : (empty)
+[t=2 SEM7] size=0 : (empty)
+[t=2 SEM8] size=0 : (empty)
+[t=2 SEM9] size=0 : (empty)
+[t=2 Q0] size=0 : (empty)
+[t=2 Q1] size=0 : (empty)
+[t=2 Q2] size=0 : (empty)
+[t=2 Q3] size=0 : (empty)
+[t=2 Q4] size=0 : (empty)
+=== End State ===
+
+[t=2 READY] size=0 : (empty)
+[t=2 READY] size=0 : (empty)
+
+=== Scheduler State @t=3 [after tick] ===
+active=5, cpu=set
+  CPU: T0(RUNNING)
+[t=3 READY] size=0 : (empty)
+[t=3 IO] size=0 : (empty)
+[t=3 SEM0] size=0 : (empty)
+[t=3 SEM1] size=0 : (empty)
+[t=3 SEM2] size=0 : (empty)
+[t=3 SEM3] size=0 : (empty)
+[t=3 SEM4] size=0 : (empty)
+[t=3 SEM5] size=0 : (empty)
+[t=3 SEM6] size=0 : (empty)
+[t=3 SEM7] size=0 : (empty)
+[t=3 SEM8] size=0 : (empty)
+[t=3 SEM9] size=0 : (empty)
+[t=3 Q0] size=0 : (empty)
+[t=3 Q1] size=0 : (empty)
+[t=3 Q2] size=0 : (empty)
+[t=3 Q3] size=0 : (empty)
+[t=3 Q4] size=0 : (empty)
+=== End State ===
+
+[t=3 READY] size=0 : (empty)
+[t=3 READY] size=0 : (empty)
+
+=== Scheduler State @t=4 [after tick] ===
+active=5, cpu=set
+  CPU: T0(RUNNING)
+[t=4 READY] size=0 : (empty)
+[t=4 IO] size=0 : (empty)
+[t=4 SEM0] size=0 : (empty)
+[t=4 SEM1] size=0 : (empty)
+[t=4 SEM2] size=0 : (empty)
+[t=4 SEM3] size=0 : (empty)
+[t=4 SEM4] size=0 : (empty)
+[t=4 SEM5] size=0 : (empty)
+[t=4 SEM6] size=0 : (empty)
+[t=4 SEM7] size=0 : (empty)
+[t=4 SEM8] size=0 : (empty)
+[t=4 SEM9] size=0 : (empty)
+[t=4 Q0] size=0 : (empty)
+[t=4 Q1] size=0 : (empty)
+[t=4 Q2] size=0 : (empty)
+[t=4 Q3] size=0 : (empty)
+[t=4 Q4] size=0 : (empty)
+=== End State ===
+
+[t=4 READY] size=0 : (empty)
+[t=4 READY] size=0 : (empty)
+
+=== Scheduler State @t=5 [after tick] ===
+active=5, cpu=set
+  CPU: T0(RUNNING)
+[t=5 READY] size=0 : (empty)
+[t=5 IO] size=0 : (empty)
+[t=5 SEM0] size=0 : (empty)
+[t=5 SEM1] size=0 : (empty)
+[t=5 SEM2] size=0 : (empty)
+[t=5 SEM3] size=0 : (empty)
+[t=5 SEM4] size=0 : (empty)
+[t=5 SEM5] size=0 : (empty)
+[t=5 SEM6] size=0 : (empty)
+[t=5 SEM7] size=0 : (empty)
+[t=5 SEM8] size=0 : (empty)
+[t=5 SEM9] size=0 : (empty)
+[t=5 Q0] size=0 : (empty)
+[t=5 Q1] size=0 : (empty)
+[t=5 Q2] size=0 : (empty)
+[t=5 Q3] size=0 : (empty)
+[t=5 Q4] size=0 : (empty)
+=== End State ===
+
+[t=5 READY] size=0 : (empty)
+
+=== Scheduler State @t=5 [demote and enqueue] ===
+active=5, cpu=none
+[t=5 READY] size=0 : (empty)
+[t=5 IO] size=0 : (empty)
+[t=5 SEM0] size=0 : (empty)
+[t=5 SEM1] size=0 : (empty)
+[t=5 SEM2] size=0 : (empty)
+[t=5 SEM3] size=0 : (empty)
+[t=5 SEM4] size=0 : (empty)
+[t=5 SEM5] size=0 : (empty)
+[t=5 SEM6] size=0 : (empty)
+[t=5 SEM7] size=0 : (empty)
+[t=5 SEM8] size=0 : (empty)
+[t=5 SEM9] size=0 : (empty)
+[t=5 Q0] size=0 : (empty)
+[t=5 Q1] size=1 : T0(READY,at=5,io=-)
+[t=5 Q2] size=0 : (empty)
+[t=5 Q3] size=0 : (empty)
+[t=5 Q4] size=0 : (empty)
+=== End State ===
+
+[t=5 READY] size=0 : (empty)
+
+=== Scheduler State @t=5 [MLFQ pick] ===
+active=5, cpu=set
+  CPU: T0(RUNNING)
+[t=5 READY] size=0 : (empty)
+[t=5 IO] size=0 : (empty)
+[t=5 SEM0] size=0 : (empty)
+[t=5 SEM1] size=0 : (empty)
+[t=5 SEM2] size=0 : (empty)
+[t=5 SEM3] size=0 : (empty)
+[t=5 SEM4] size=0 : (empty)
+[t=5 SEM5] size=0 : (empty)
+[t=5 SEM6] size=0 : (empty)
+[t=5 SEM7] size=0 : (empty)
+[t=5 SEM8] size=0 : (empty)
+[t=5 SEM9] size=0 : (empty)
+[t=5 Q0] size=0 : (empty)
+[t=5 Q1] size=0 : (empty)
+[t=5 Q2] size=0 : (empty)
+[t=5 Q3] size=0 : (empty)
+[t=5 Q4] size=0 : (empty)
+=== End State ===
+
+
+=== Scheduler State @t=6 [after tick] ===
+active=5, cpu=set
+  CPU: T0(RUNNING)
+[t=6 READY] size=0 : (empty)
+[t=6 IO] size=0 : (empty)
+[t=6 SEM0] size=0 : (empty)
+[t=6 SEM1] size=0 : (empty)
+[t=6 SEM2] size=0 : (empty)
+[t=6 SEM3] size=0 : (empty)
+[t=6 SEM4] size=0 : (empty)
+[t=6 SEM5] size=0 : (empty)
+[t=6 SEM6] size=0 : (empty)
+[t=6 SEM7] size=0 : (empty)
+[t=6 SEM8] size=0 : (empty)
+[t=6 SEM9] size=0 : (empty)
+[t=6 Q0] size=0 : (empty)
+[t=6 Q1] size=0 : (empty)
+[t=6 Q2] size=0 : (empty)
+[t=6 Q3] size=0 : (empty)
+[t=6 Q4] size=0 : (empty)
+=== End State ===
+
+[t=6 READY] size=0 : (empty)
+[t=6 READY] size=0 : (empty)
+
+=== Scheduler State @t=7 [after tick] ===
+active=5, cpu=set
+  CPU: T0(RUNNING)
+[t=7 READY] size=0 : (empty)
+[t=7 IO] size=0 : (empty)
+[t=7 SEM0] size=0 : (empty)
+[t=7 SEM1] size=0 : (empty)
+[t=7 SEM2] size=0 : (empty)
+[t=7 SEM3] size=0 : (empty)
+[t=7 SEM4] size=0 : (empty)
+[t=7 SEM5] size=0 : (empty)
+[t=7 SEM6] size=0 : (empty)
+[t=7 SEM7] size=0 : (empty)
+[t=7 SEM8] size=0 : (empty)
+[t=7 SEM9] size=0 : (empty)
+[t=7 Q0] size=0 : (empty)
+[t=7 Q1] size=0 : (empty)
+[t=7 Q2] size=0 : (empty)
+[t=7 Q3] size=0 : (empty)
+[t=7 Q4] size=0 : (empty)
+=== End State ===
+
+[t=7 READY] size=0 : (empty)
+[t=7 READY] size=0 : (empty)
+
+=== Scheduler State @t=8 [after tick] ===
+active=5, cpu=set
+  CPU: T0(RUNNING)
+[t=8 READY] size=0 : (empty)
+[t=8 IO] size=0 : (empty)
+[t=8 SEM0] size=0 : (empty)
+[t=8 SEM1] size=0 : (empty)
+[t=8 SEM2] size=0 : (empty)
+[t=8 SEM3] size=0 : (empty)
+[t=8 SEM4] size=0 : (empty)
+[t=8 SEM5] size=0 : (empty)
+[t=8 SEM6] size=0 : (empty)
+[t=8 SEM7] size=0 : (empty)
+[t=8 SEM8] size=0 : (empty)
+[t=8 SEM9] size=0 : (empty)
+[t=8 Q0] size=0 : (empty)
+[t=8 Q1] size=0 : (empty)
+[t=8 Q2] size=0 : (empty)
+[t=8 Q3] size=0 : (empty)
+[t=8 Q4] size=0 : (empty)
+=== End State ===
+
+[t=8 READY] size=0 : (empty)
+[t=8 READY] size=0 : (empty)
+[t=8 READY] size=0 : (empty)
+
+=== Scheduler State @t=8 [NEW admitted -> Q0] ===
+active=4, cpu=none
+[t=8 READY] size=0 : (empty)
+[t=8 IO] size=0 : (empty)
+[t=8 SEM0] size=0 : (empty)
+[t=8 SEM1] size=0 : (empty)
+[t=8 SEM2] size=0 : (empty)
+[t=8 SEM3] size=0 : (empty)
+[t=8 SEM4] size=0 : (empty)
+[t=8 SEM5] size=0 : (empty)
+[t=8 SEM6] size=0 : (empty)
+[t=8 SEM7] size=0 : (empty)
+[t=8 SEM8] size=0 : (empty)
+[t=8 SEM9] size=0 : (empty)
+[t=8 Q0] size=1 : T1(READY,at=2,io=-)
+[t=8 Q1] size=0 : (empty)
+[t=8 Q2] size=0 : (empty)
+[t=8 Q3] size=0 : (empty)
+[t=8 Q4] size=0 : (empty)
+=== End State ===
+
+[t=8 READY] size=0 : (empty)
+
+=== Scheduler State @t=8 [MLFQ pick] ===
+active=4, cpu=set
+  CPU: T1(RUNNING)
+[t=8 READY] size=0 : (empty)
+[t=8 IO] size=0 : (empty)
+[t=8 SEM0] size=0 : (empty)
+[t=8 SEM1] size=0 : (empty)
+[t=8 SEM2] size=0 : (empty)
+[t=8 SEM3] size=0 : (empty)
+[t=8 SEM4] size=0 : (empty)
+[t=8 SEM5] size=0 : (empty)
+[t=8 SEM6] size=0 : (empty)
+[t=8 SEM7] size=0 : (empty)
+[t=8 SEM8] size=0 : (empty)
+[t=8 SEM9] size=0 : (empty)
+[t=8 Q0] size=0 : (empty)
+[t=8 Q1] size=0 : (empty)
+[t=8 Q2] size=0 : (empty)
+[t=8 Q3] size=0 : (empty)
+[t=8 Q4] size=0 : (empty)
+=== End State ===
+
+
+=== Scheduler State @t=9 [after tick] ===
+active=4, cpu=set
+  CPU: T1(RUNNING)
+[t=9 READY] size=0 : (empty)
+[t=9 IO] size=0 : (empty)
+[t=9 SEM0] size=0 : (empty)
+[t=9 SEM1] size=0 : (empty)
+[t=9 SEM2] size=0 : (empty)
+[t=9 SEM3] size=0 : (empty)
+[t=9 SEM4] size=0 : (empty)
+[t=9 SEM5] size=0 : (empty)
+[t=9 SEM6] size=0 : (empty)
+[t=9 SEM7] size=0 : (empty)
+[t=9 SEM8] size=0 : (empty)
+[t=9 SEM9] size=0 : (empty)
+[t=9 Q0] size=0 : (empty)
+[t=9 Q1] size=0 : (empty)
+[t=9 Q2] size=0 : (empty)
+[t=9 Q3] size=0 : (empty)
+[t=9 Q4] size=0 : (empty)
+=== End State ===
+
+[t=9 READY] size=0 : (empty)
+[t=9 READY] size=0 : (empty)
+
+=== Scheduler State @t=10 [after tick] ===
+active=4, cpu=set
+  CPU: T1(RUNNING)
+[t=10 READY] size=0 : (empty)
+[t=10 IO] size=0 : (empty)
+[t=10 SEM0] size=0 : (empty)
+[t=10 SEM1] size=0 : (empty)
+[t=10 SEM2] size=0 : (empty)
+[t=10 SEM3] size=0 : (empty)
+[t=10 SEM4] size=0 : (empty)
+[t=10 SEM5] size=0 : (empty)
+[t=10 SEM6] size=0 : (empty)
+[t=10 SEM7] size=0 : (empty)
+[t=10 SEM8] size=0 : (empty)
+[t=10 SEM9] size=0 : (empty)
+[t=10 Q0] size=0 : (empty)
+[t=10 Q1] size=0 : (empty)
+[t=10 Q2] size=0 : (empty)
+[t=10 Q3] size=0 : (empty)
+[t=10 Q4] size=0 : (empty)
+=== End State ===
+
+[t=10 READY] size=0 : (empty)
+[t=10 READY] size=0 : (empty)
+
+=== Scheduler State @t=11 [after tick] ===
+active=4, cpu=set
+  CPU: T1(RUNNING)
+[t=11 READY] size=0 : (empty)
+[t=11 IO] size=0 : (empty)
+[t=11 SEM0] size=0 : (empty)
+[t=11 SEM1] size=0 : (empty)
+[t=11 SEM2] size=0 : (empty)
+[t=11 SEM3] size=0 : (empty)
+[t=11 SEM4] size=0 : (empty)
+[t=11 SEM5] size=0 : (empty)
+[t=11 SEM6] size=0 : (empty)
+[t=11 SEM7] size=0 : (empty)
+[t=11 SEM8] size=0 : (empty)
+[t=11 SEM9] size=0 : (empty)
+[t=11 Q0] size=0 : (empty)
+[t=11 Q1] size=0 : (empty)
+[t=11 Q2] size=0 : (empty)
+[t=11 Q3] size=0 : (empty)
+[t=11 Q4] size=0 : (empty)
+=== End State ===
+
+[t=11 READY] size=0 : (empty)
+[t=11 READY] size=0 : (empty)
+
+=== Scheduler State @t=12 [after tick] ===
+active=4, cpu=set
+  CPU: T1(RUNNING)
+[t=12 READY] size=0 : (empty)
+[t=12 IO] size=0 : (empty)
+[t=12 SEM0] size=0 : (empty)
+[t=12 SEM1] size=0 : (empty)
+[t=12 SEM2] size=0 : (empty)
+[t=12 SEM3] size=0 : (empty)
+[t=12 SEM4] size=0 : (empty)
+[t=12 SEM5] size=0 : (empty)
+[t=12 SEM6] size=0 : (empty)
+[t=12 SEM7] size=0 : (empty)
+[t=12 SEM8] size=0 : (empty)
+[t=12 SEM9] size=0 : (empty)
+[t=12 Q0] size=0 : (empty)
+[t=12 Q1] size=0 : (empty)
+[t=12 Q2] size=0 : (empty)
+[t=12 Q3] size=0 : (empty)
+[t=12 Q4] size=0 : (empty)
+=== End State ===
+
+[t=12 READY] size=0 : (empty)
+[t=12 READY] size=0 : (empty)
+
+=== Scheduler State @t=13 [after tick] ===
+active=4, cpu=set
+  CPU: T1(RUNNING)
+[t=13 READY] size=0 : (empty)
+[t=13 IO] size=0 : (empty)
+[t=13 SEM0] size=0 : (empty)
+[t=13 SEM1] size=0 : (empty)
+[t=13 SEM2] size=0 : (empty)
+[t=13 SEM3] size=0 : (empty)
+[t=13 SEM4] size=0 : (empty)
+[t=13 SEM5] size=0 : (empty)
+[t=13 SEM6] size=0 : (empty)
+[t=13 SEM7] size=0 : (empty)
+[t=13 SEM8] size=0 : (empty)
+[t=13 SEM9] size=0 : (empty)
+[t=13 Q0] size=0 : (empty)
+[t=13 Q1] size=0 : (empty)
+[t=13 Q2] size=0 : (empty)
+[t=13 Q3] size=0 : (empty)
+[t=13 Q4] size=0 : (empty)
+=== End State ===
+
+[t=13 READY] size=0 : (empty)
+[t=13 READY] size=0 : (empty)
+[t=13 READY] size=0 : (empty)
+
+=== Scheduler State @t=13 [NEW admitted -> Q0] ===
+active=3, cpu=none
+[t=13 READY] size=0 : (empty)
+[t=13 IO] size=0 : (empty)
+[t=13 SEM0] size=0 : (empty)
+[t=13 SEM1] size=0 : (empty)
+[t=13 SEM2] size=0 : (empty)
+[t=13 SEM3] size=0 : (empty)
+[t=13 SEM4] size=0 : (empty)
+[t=13 SEM5] size=0 : (empty)
+[t=13 SEM6] size=0 : (empty)
+[t=13 SEM7] size=0 : (empty)
+[t=13 SEM8] size=0 : (empty)
+[t=13 SEM9] size=0 : (empty)
+[t=13 Q0] size=1 : T4(READY,at=6,io=-)
+[t=13 Q1] size=0 : (empty)
+[t=13 Q2] size=0 : (empty)
+[t=13 Q3] size=0 : (empty)
+[t=13 Q4] size=0 : (empty)
+=== End State ===
+
+[t=13 READY] size=0 : (empty)
+
+=== Scheduler State @t=13 [MLFQ pick] ===
+active=3, cpu=set
+  CPU: T4(RUNNING)
+[t=13 READY] size=0 : (empty)
+[t=13 IO] size=0 : (empty)
+[t=13 SEM0] size=0 : (empty)
+[t=13 SEM1] size=0 : (empty)
+[t=13 SEM2] size=0 : (empty)
+[t=13 SEM3] size=0 : (empty)
+[t=13 SEM4] size=0 : (empty)
+[t=13 SEM5] size=0 : (empty)
+[t=13 SEM6] size=0 : (empty)
+[t=13 SEM7] size=0 : (empty)
+[t=13 SEM8] size=0 : (empty)
+[t=13 SEM9] size=0 : (empty)
+[t=13 Q0] size=0 : (empty)
+[t=13 Q1] size=0 : (empty)
+[t=13 Q2] size=0 : (empty)
+[t=13 Q3] size=0 : (empty)
+[t=13 Q4] size=0 : (empty)
+=== End State ===
+
+
+=== Scheduler State @t=14 [after tick] ===
+active=3, cpu=set
+  CPU: T4(RUNNING)
+[t=14 READY] size=0 : (empty)
+[t=14 IO] size=0 : (empty)
+[t=14 SEM0] size=0 : (empty)
+[t=14 SEM1] size=0 : (empty)
+[t=14 SEM2] size=0 : (empty)
+[t=14 SEM3] size=0 : (empty)
+[t=14 SEM4] size=0 : (empty)
+[t=14 SEM5] size=0 : (empty)
+[t=14 SEM6] size=0 : (empty)
+[t=14 SEM7] size=0 : (empty)
+[t=14 SEM8] size=0 : (empty)
+[t=14 SEM9] size=0 : (empty)
+[t=14 Q0] size=0 : (empty)
+[t=14 Q1] size=0 : (empty)
+[t=14 Q2] size=0 : (empty)
+[t=14 Q3] size=0 : (empty)
+[t=14 Q4] size=0 : (empty)
+=== End State ===
+
+[t=14 READY] size=0 : (empty)
+[t=14 READY] size=0 : (empty)
+[t=14 READY] size=0 : (empty)
+
+=== Scheduler State @t=14 [NEW admitted -> Q0] ===
+active=2, cpu=none
+[t=14 READY] size=0 : (empty)
+[t=14 IO] size=0 : (empty)
+[t=14 SEM0] size=0 : (empty)
+[t=14 SEM1] size=0 : (empty)
+[t=14 SEM2] size=0 : (empty)
+[t=14 SEM3] size=0 : (empty)
+[t=14 SEM4] size=0 : (empty)
+[t=14 SEM5] size=0 : (empty)
+[t=14 SEM6] size=0 : (empty)
+[t=14 SEM7] size=0 : (empty)
+[t=14 SEM8] size=0 : (empty)
+[t=14 SEM9] size=0 : (empty)
+[t=14 Q0] size=1 : T3(READY,at=4,io=-)
+[t=14 Q1] size=0 : (empty)
+[t=14 Q2] size=0 : (empty)
+[t=14 Q3] size=0 : (empty)
+[t=14 Q4] size=0 : (empty)
+=== End State ===
+
+[t=14 READY] size=0 : (empty)
+
+=== Scheduler State @t=14 [MLFQ pick] ===
+active=2, cpu=set
+  CPU: T3(RUNNING)
+[t=14 READY] size=0 : (empty)
+[t=14 IO] size=0 : (empty)
+[t=14 SEM0] size=0 : (empty)
+[t=14 SEM1] size=0 : (empty)
+[t=14 SEM2] size=0 : (empty)
+[t=14 SEM3] size=0 : (empty)
+[t=14 SEM4] size=0 : (empty)
+[t=14 SEM5] size=0 : (empty)
+[t=14 SEM6] size=0 : (empty)
+[t=14 SEM7] size=0 : (empty)
+[t=14 SEM8] size=0 : (empty)
+[t=14 SEM9] size=0 : (empty)
+[t=14 Q0] size=0 : (empty)
+[t=14 Q1] size=0 : (empty)
+[t=14 Q2] size=0 : (empty)
+[t=14 Q3] size=0 : (empty)
+[t=14 Q4] size=0 : (empty)
+=== End State ===
+
+
+=== Scheduler State @t=15 [after tick] ===
+active=2, cpu=set
+  CPU: T3(RUNNING)
+[t=15 READY] size=0 : (empty)
+[t=15 IO] size=0 : (empty)
+[t=15 SEM0] size=0 : (empty)
+[t=15 SEM1] size=0 : (empty)
+[t=15 SEM2] size=0 : (empty)
+[t=15 SEM3] size=0 : (empty)
+[t=15 SEM4] size=0 : (empty)
+[t=15 SEM5] size=0 : (empty)
+[t=15 SEM6] size=0 : (empty)
+[t=15 SEM7] size=0 : (empty)
+[t=15 SEM8] size=0 : (empty)
+[t=15 SEM9] size=0 : (empty)
+[t=15 Q0] size=0 : (empty)
+[t=15 Q1] size=0 : (empty)
+[t=15 Q2] size=0 : (empty)
+[t=15 Q3] size=0 : (empty)
+[t=15 Q4] size=0 : (empty)
+=== End State ===
+
+[t=15 READY] size=0 : (empty)
+[t=15 READY] size=0 : (empty)
+
+=== Scheduler State @t=16 [after tick] ===
+active=2, cpu=set
+  CPU: T3(RUNNING)
+[t=16 READY] size=0 : (empty)
+[t=16 IO] size=0 : (empty)
+[t=16 SEM0] size=0 : (empty)
+[t=16 SEM1] size=0 : (empty)
+[t=16 SEM2] size=0 : (empty)
+[t=16 SEM3] size=0 : (empty)
+[t=16 SEM4] size=0 : (empty)
+[t=16 SEM5] size=0 : (empty)
+[t=16 SEM6] size=0 : (empty)
+[t=16 SEM7] size=0 : (empty)
+[t=16 SEM8] size=0 : (empty)
+[t=16 SEM9] size=0 : (empty)
+[t=16 Q0] size=0 : (empty)
+[t=16 Q1] size=0 : (empty)
+[t=16 Q2] size=0 : (empty)
+[t=16 Q3] size=0 : (empty)
+[t=16 Q4] size=0 : (empty)
+=== End State ===
+
+[t=16 READY] size=0 : (empty)
+[t=16 READY] size=0 : (empty)
+[t=16 READY] size=0 : (empty)
+
+=== Scheduler State @t=16 [NEW admitted -> Q0] ===
+active=1, cpu=none
+[t=16 READY] size=0 : (empty)
+[t=16 IO] size=0 : (empty)
+[t=16 SEM0] size=0 : (empty)
+[t=16 SEM1] size=0 : (empty)
+[t=16 SEM2] size=0 : (empty)
+[t=16 SEM3] size=0 : (empty)
+[t=16 SEM4] size=0 : (empty)
+[t=16 SEM5] size=0 : (empty)
+[t=16 SEM6] size=0 : (empty)
+[t=16 SEM7] size=0 : (empty)
+[t=16 SEM8] size=0 : (empty)
+[t=16 SEM9] size=0 : (empty)
+[t=16 Q0] size=1 : T2(READY,at=3,io=-)
+[t=16 Q1] size=0 : (empty)
+[t=16 Q2] size=0 : (empty)
+[t=16 Q3] size=0 : (empty)
+[t=16 Q4] size=0 : (empty)
+=== End State ===
+
+[t=16 READY] size=0 : (empty)
+
+=== Scheduler State @t=16 [MLFQ pick] ===
+active=1, cpu=set
+  CPU: T2(RUNNING)
+[t=16 READY] size=0 : (empty)
+[t=16 IO] size=0 : (empty)
+[t=16 SEM0] size=0 : (empty)
+[t=16 SEM1] size=0 : (empty)
+[t=16 SEM2] size=0 : (empty)
+[t=16 SEM3] size=0 : (empty)
+[t=16 SEM4] size=0 : (empty)
+[t=16 SEM5] size=0 : (empty)
+[t=16 SEM6] size=0 : (empty)
+[t=16 SEM7] size=0 : (empty)
+[t=16 SEM8] size=0 : (empty)
+[t=16 SEM9] size=0 : (empty)
+[t=16 Q0] size=0 : (empty)
+[t=16 Q1] size=0 : (empty)
+[t=16 Q2] size=0 : (empty)
+[t=16 Q3] size=0 : (empty)
+[t=16 Q4] size=0 : (empty)
+=== End State ===
+
+
+=== Scheduler State @t=17 [after tick] ===
+active=1, cpu=set
+  CPU: T2(RUNNING)
+[t=17 READY] size=0 : (empty)
+[t=17 IO] size=0 : (empty)
+[t=17 SEM0] size=0 : (empty)
+[t=17 SEM1] size=0 : (empty)
+[t=17 SEM2] size=0 : (empty)
+[t=17 SEM3] size=0 : (empty)
+[t=17 SEM4] size=0 : (empty)
+[t=17 SEM5] size=0 : (empty)
+[t=17 SEM6] size=0 : (empty)
+[t=17 SEM7] size=0 : (empty)
+[t=17 SEM8] size=0 : (empty)
+[t=17 SEM9] size=0 : (empty)
+[t=17 Q0] size=0 : (empty)
+[t=17 Q1] size=0 : (empty)
+[t=17 Q2] size=0 : (empty)
+[t=17 Q3] size=0 : (empty)
+[t=17 Q4] size=0 : (empty)
+=== End State ===
+
+[t=17 READY] size=0 : (empty)
+[t=17 READY] size=0 : (empty)
+
+=== Scheduler State @t=18 [after tick] ===
+active=1, cpu=set
+  CPU: T2(RUNNING)
+[t=18 READY] size=0 : (empty)
+[t=18 IO] size=0 : (empty)
+[t=18 SEM0] size=0 : (empty)
+[t=18 SEM1] size=0 : (empty)
+[t=18 SEM2] size=0 : (empty)
+[t=18 SEM3] size=0 : (empty)
+[t=18 SEM4] size=0 : (empty)
+[t=18 SEM5] size=0 : (empty)
+[t=18 SEM6] size=0 : (empty)
+[t=18 SEM7] size=0 : (empty)
+[t=18 SEM8] size=0 : (empty)
+[t=18 SEM9] size=0 : (empty)
+[t=18 Q0] size=0 : (empty)
+[t=18 Q1] size=0 : (empty)
+[t=18 Q2] size=0 : (empty)
+[t=18 Q3] size=0 : (empty)
+[t=18 Q4] size=0 : (empty)
+=== End State ===
+
+[t=18 READY] size=0 : (empty)
+[t=18 READY] size=0 : (empty)
+
+=== Scheduler State @t=19 [after tick] ===
+active=1, cpu=set
+  CPU: T2(RUNNING)
+[t=19 READY] size=0 : (empty)
+[t=19 IO] size=0 : (empty)
+[t=19 SEM0] size=0 : (empty)
+[t=19 SEM1] size=0 : (empty)
+[t=19 SEM2] size=0 : (empty)
+[t=19 SEM3] size=0 : (empty)
+[t=19 SEM4] size=0 : (empty)
+[t=19 SEM5] size=0 : (empty)
+[t=19 SEM6] size=0 : (empty)
+[t=19 SEM7] size=0 : (empty)
+[t=19 SEM8] size=0 : (empty)
+[t=19 SEM9] size=0 : (empty)
+[t=19 Q0] size=0 : (empty)
+[t=19 Q1] size=0 : (empty)
+[t=19 Q2] size=0 : (empty)
+[t=19 Q3] size=0 : (empty)
+[t=19 Q4] size=0 : (empty)
+=== End State ===
+
+[t=19 READY] size=0 : (empty)
+[t=19 READY] size=0 : (empty)
